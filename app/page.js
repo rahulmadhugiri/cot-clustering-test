@@ -10,6 +10,9 @@ export default function HomePage() {
         <Link href="/clusters" className="nav-link">
           View CoT Clusters
         </Link>
+        <Link href="/propagation" className="nav-link">
+          Label Propagation Experiment
+        </Link>
       </div>
       <QAList />
     </main>
