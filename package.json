@@ -2,20 +2,30 @@
   "name": "cot-clustering-test",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "embed": "node -r dotenv/config scripts/embed-and-upload.js dotenv_config_path=.env.local",
+    "embed-mixed": "node -r dotenv/config scripts/embed-mixed-cots.js dotenv_config_path=.env.local",
+    "embed-abstract": "node -r dotenv/config scripts/embed-abstract-cots.js dotenv_config_path=.env.local",
+    "embed-pure-logic": "node -r dotenv/config scripts/embed-pure-logic-cots.js dotenv_config_path=.env.local",
+    "test-connection": "node -r dotenv/config scripts/test-connection.js dotenv_config_path=.env.local"
   },
   "dependencies": {
+    "@pinecone-database/pinecone": "^6.1.1",
+    "dotenv": "^16.5.0",
+    "hdbscan": "^0.0.1-alpha.1",
+    "next": "15.3.4",
+    "openai": "^5.5.1",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "next": "15.3.4"
+    "react-dom": "^19.0.0"
   },
   "devDependencies": {
+    "@eslint/eslintrc": "^3",
     "eslint": "^9",
-    "eslint-config-next": "15.3.4",
-    "@eslint/eslintrc": "^3"
+    "eslint-config-next": "15.3.4"
   }
 }
