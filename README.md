@@ -1,15 +1,34 @@
 # 🧠 CoT Reasoning Pattern Clustering Research
 
-A comprehensive research platform for **Chain-of-Thought reasoning pattern clustering** and **hallucination detection** using minimal human supervision.
+A research platform for Chain-of-Thought reasoning pattern clustering and scalable supervision of LLM outputs using minimal human labeling effort.
 
 ## 🎯 Research Goal
 
-Demonstrate that **reasoning patterns** (not semantic content) can be clustered to enable **label propagation** for hallucination detection with minimal human effort.
+Demonstrate that reasoning patterns—independent of surface semantics—can be clustered to enable label propagation across LLM input/output pairs, allowing scalable supervision, dataset curation, and hallucination detection with minimal manual intervention.
 
 ### Key Innovation
-- **40% human labeling** → **80% coverage** via reasoning pattern similarity
-- Cross-domain propagation (automotive Q&A → viscosity questions)
-- Pure logical structure analysis (mathematical notation)
+- **40% human labeling** → **80% dataset coverage** via shared reasoning patterns
+- **Label propagation across domains** (e.g., automotive → physics)
+- **Pure logical structure analysis** using normalized CoT format
+
+## 📈 Research Applications
+
+### Immediate Applications
+- **Rapid Labeling**: Tag LLM outputs across datasets using just a few human-labeled examples
+- **Content Moderation**: Scalable hallucination detection for safety-critical deployments
+- **Training Data Curation**: Identify flawed reasoning in pretraining or fine-tuning corpora
+- **Evaluation**: Ground truth supervision for benchmarking reasoning ability
+
+## 🏆 Broader Impact
+
+This project demonstrates that reasoning pattern clustering enables:
+
+- **Scalable Supervision**: LLM behaviors can be labeled en masse using structure, not semantics
+- **Cross-Domain Generalization**: Logical forms transfer between unrelated tasks
+- **Efficient Quality Control**: Early detection of unreliable or illogical model outputs
+- **AI Safety Research Foundations**: A new approach to studying and guiding model reasoning patterns
+
+This methodology introduces a practical pathway to automated oversight of LLMs—crucial for real-world deployment at scale, especially in domains where trust, correctness, and interpretability matter.
 
 ## 🏗️ Architecture
 
@@ -73,7 +92,7 @@ npm run dev
 
 ### 4. Access the Platform
 
-- **Frontend**: http://localhost:3001
+- **Frontend**: http://localhost:3000
 - **Backend API**: http://localhost:8000/docs
 - **Jupyter Analysis**: `cd backend && jupyter notebook`
 
@@ -146,19 +165,6 @@ npm run clean            # Clean build artifacts
 npm run lint:frontend    # Code quality checks
 ```
 
-## 📈 Research Applications
-
-### Immediate Applications
-- **Content Moderation**: Automated unreliable response detection
-- **Training Data Curation**: Identify problematic reasoning patterns
-- **Quality Assurance**: Real-time hallucination monitoring
-
-### Research Extensions
-- **Multi-Modal Reasoning**: Extend to vision + language
-- **Domain Adaptation**: Transfer patterns across fields
-- **Reasoning Taxonomy**: Comprehensive pattern classification
-- **Causal Analysis**: Why certain patterns indicate hallucinations
-
 ## 🎓 Academic Contributions
 
 ### Novel Insights
@@ -211,19 +217,8 @@ Unpropagated: 1 (20% - appropriate uncertainty)
 - **Frontend Components**: Documented React components
 - **Python Research**: `python_version/README.md`
 
-## 🏆 Research Impact
+## 🧑‍🔬 Credits
 
-This work demonstrates that **reasoning pattern clustering** enables:
-
-1. **Scalable Hallucination Detection** with minimal human supervision
-2. **Cross-Domain Knowledge Transfer** based on logical structure
-3. **Efficient Content Moderation** for AI-generated responses
-4. **Research Methodology** for studying reasoning patterns
-
-The approach shows promise for **scaling AI safety** through automated detection of unreliable reasoning, particularly valuable as language models become more prevalent in critical applications.
-
----
-
-**Research Team**: [Your Institution]  
-**Contact**: [Your Email]  
+**Research Lead**: Rahul Madhugiri
+**Contact**: rahulmadhugiri@gmail.com
 **License**: MIT (Academic/Research Use)
