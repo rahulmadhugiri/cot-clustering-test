@@ -41,7 +41,7 @@ class EmbeddingService:
                 response = self.client.embeddings.create(
                     model="text-embedding-3-small",
                     input=cot.cot,
-                    dimensions=1024
+                    dimensions=1024  # Match Pinecone index dimension
                 )
                 
                 embedding = response.data[0].embedding
@@ -53,16 +53,20 @@ class EmbeddingService:
                 
                 # Store in Pinecone if available
                 if self.index:
+                    metadata = {
+                        "question": cot.question,
+                        "answer": cot.answer,
+                        "cot": cot.cot
+                    }
+                    # Only add reasoning_pattern if it's not None
+                    if cot.reasoning_pattern:
+                        metadata["reasoning_pattern"] = cot.reasoning_pattern.value if hasattr(cot.reasoning_pattern, 'value') else str(cot.reasoning_pattern)
+                    
                     self.index.upsert(
                         vectors=[(
                             cot.id,
                             embedding,
-                            {
-                                "question": cot.question,
-                                "answer": cot.answer,
-                                "cot": cot.cot,
-                                "reasoning_pattern": cot.reasoning_pattern.value if cot.reasoning_pattern else None
-                            }
+                            metadata
                         )]
                     )
                 
@@ -85,7 +89,7 @@ class EmbeddingService:
             # Query all vectors (this is a simplified approach)
             # In production, you'd want pagination for large datasets
             response = self.index.query(
-                vector=[0.0] * 1024,  # Dummy vector
+                vector=[0.0] * 1024,  # Dummy vector matching index dimension
                 top_k=10000,  # Large number to get all
                 include_values=True,
                 include_metadata=True

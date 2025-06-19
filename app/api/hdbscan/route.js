@@ -1,22 +1,16 @@
-// No longer using JavaScript HDBSCAN - now calls Python FastAPI backend
-
-// Updated to use Python FastAPI backend for HDBSCAN clustering
+// Updated to use K-Means clustering via Python FastAPI backend (better than HDBSCAN for CoT data)
 const PYTHON_API_BASE = process.env.PYTHON_API_BASE || 'http://localhost:8000/api/v1';
 
 export async function GET() {
   try {
-    console.log('Starting HDBSCAN clustering via Python backend...');
+    console.log('Starting K-Means clustering via Python backend (recommended for CoT data)...');
     
-    // Call Python FastAPI backend for clustering
-    const response = await fetch(`${PYTHON_API_BASE}/cluster`, {
+    // Call Python FastAPI backend for K-Means clustering (much better than HDBSCAN)
+    const response = await fetch(`${PYTHON_API_BASE}/cluster-kmeans?n_clusters=20`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        min_cluster_size: 2,
-        min_samples: 1
-      })
+      }
     });
     
     if (!response.ok) {
@@ -39,18 +33,19 @@ export async function GET() {
       cluster_id: item.cluster_id,
       cluster_size: clusteringResult.summary.cluster_sizes[item.cluster_id] || 0,
       outlier_score: item.outlier_score,
-      is_outlier: item.cluster_id === -1
+      is_outlier: false  // K-means doesn't produce outliers
     }));
     
-    // Sort by cluster ID, then by outlier score (same as before)
+    // Sort by cluster ID, then by outlier score (distance to centroid)
     results.sort((a, b) => {
       if (a.cluster_id !== b.cluster_id) {
         return a.cluster_id - b.cluster_id;
       }
-      return b.outlier_score - a.outlier_score;
+      return a.outlier_score - b.outlier_score;  // Lower score = closer to centroid
     });
     
-    console.log(`Returning ${results.length} clustered results from Python backend`);
+    console.log(`Returning ${results.length} K-Means clustered results from Python backend`);
+    console.log(`K-Means results: ${clusteringResult.summary.num_clusters} clusters, 0 outliers, silhouette score: ${clusteringResult.summary.silhouette_score?.toFixed(3) || 'N/A'}`);
     
     // Return in the same format your frontend expects
     return Response.json({
@@ -59,12 +54,15 @@ export async function GET() {
       summary: {
         total_vectors: results.length,
         clusters: clusteringResult.summary.num_clusters,
-        outliers: clusteringResult.summary.outliers
+        outliers: clusteringResult.summary.outliers,
+        method: clusteringResult.summary.method,
+        silhouette_score: clusteringResult.summary.silhouette_score,
+        avg_cluster_size: clusteringResult.summary.avg_cluster_size
       }
     });
     
   } catch (error) {
-    console.error('Error calling Python HDBSCAN API:', error);
+    console.error('Error calling Python K-Means API:', error);
     
     // Fallback: if Python backend is not available, return a helpful error
     if (error.message.includes('ECONNREFUSED') || error.message.includes('fetch')) {
@@ -75,7 +73,7 @@ export async function GET() {
     }
     
     return Response.json({
-      error: 'Failed to perform clustering',
+      error: 'Failed to perform K-Means clustering',
       details: error.message
     }, { status: 500 });
   }

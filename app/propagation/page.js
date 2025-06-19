@@ -19,88 +19,67 @@ export default function PropagationPage() {
       setLoading(true);
       setError(null);
       
-      const response = await fetch('/api/hdbscan');
-      const result = await response.json();
+      // Use the new diverse representative selection (30 pairs instead of 2)
+      const response = await fetch('/api/representatives?count=30', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
       
       if (!response.ok) {
-        throw new Error(result.error || 'Failed to fetch cluster data');
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || 'Failed to fetch diverse representatives');
       }
       
-      const clusterData = result.data;
-      setClusters(clusterData);
+      const result = await response.json();
       
-      // Group by cluster and select representatives
-      const clusterGroups = {};
-      clusterData.forEach(item => {
-        const clusterId = item.cluster_id;
-        if (clusterId !== -1) { // Ignore outliers for now
-          if (!clusterGroups[clusterId]) {
-            clusterGroups[clusterId] = [];
-          }
-          clusterGroups[clusterId].push(item);
-        }
-      });
+      if (!result.success) {
+        throw new Error('Failed to select diverse representatives');
+      }
       
-      // Get unique Q&A pairs across all clusters
-      const uniqueQAPairs = {};
-      Object.values(clusterGroups).forEach(clusterItems => {
-        clusterItems.forEach(item => {
-          const qaPairKey = `${item.question}|||${item.answer}`;
-          if (!uniqueQAPairs[qaPairKey]) {
-            uniqueQAPairs[qaPairKey] = {
-              question: item.question,
-              answer: item.answer,
-              clusters: [],
-              bestCot: null,
-              bestOutlierScore: 1.0
-            };
-          }
-          
-          // Track which clusters this Q&A pair appears in
-          if (!uniqueQAPairs[qaPairKey].clusters.includes(item.cluster_id)) {
-            uniqueQAPairs[qaPairKey].clusters.push(item.cluster_id);
-          }
-          
-          // Keep track of the best (most central) CoT for this Q&A pair
-          if (item.outlier_score < uniqueQAPairs[qaPairKey].bestOutlierScore) {
-            uniqueQAPairs[qaPairKey].bestCot = item;
-            uniqueQAPairs[qaPairKey].bestOutlierScore = item.outlier_score;
-          }
-        });
-      });
+      // Extract the actual data from the proxy response
+      const data = result.data;
       
-      // Select only 2 Q&A pairs for human labeling (to demonstrate propagation)
-      // Choose pairs that appear in the most clusters (most reasoning diversity)
-      const qaPairsList = Object.keys(uniqueQAPairs).map(key => ({
-        qa_pair_key: key,
-        ...uniqueQAPairs[key],
-        cluster_coverage: uniqueQAPairs[key].clusters.length
-      }));
-      
-      // Sort by cluster coverage (descending) and outlier score (ascending for tie-breaking)
-      qaPairsList.sort((a, b) => {
-        if (a.cluster_coverage !== b.cluster_coverage) {
-          return b.cluster_coverage - a.cluster_coverage; // More clusters first
-        }
-        return a.bestOutlierScore - b.bestOutlierScore; // Lower outlier score first
-      });
-      
-      // Select only the top 2 Q&A pairs for human labeling
-      const selectedForLabeling = qaPairsList.slice(0, 2);
-      
-      const reps = selectedForLabeling.map(qaPair => ({
-        ...qaPair.bestCot,
-        qa_pair_key: qaPair.qa_pair_key,
-        cluster_coverage: qaPair.cluster_coverage,
-        reasoning_clusters: qaPair.clusters
+      // Transform the diverse representatives into the format expected by the frontend
+      const selectedPairs = data.selected_pairs;
+      const reps = selectedPairs.map((pair, index) => ({
+        id: `rep-${index}`,
+        question: pair.question.replace(/\.\.\.$/, ''), // Remove truncation indicator
+        answer: pair.answer.replace(/\.\.\.$/, ''), // Remove truncation indicator  
+        cot: pair.cot_preview.replace(/\.\.\.$/, ''), // Remove truncation indicator
+        cluster_id: pair.cluster_id,
+        outlier_score: pair.outlier_score,
+        qa_pair_key: pair.qa_key,
+        trust_level: pair.trust_level,
+        reasoning_type: pair.reasoning_type,
+        cot_length: pair.cot_length
       }));
       
       setRepresentatives(reps);
+      
+      // Set up cluster summary for display
+      const clusterInfo = data.clustering_info;
+      const qualityStats = data.quality_stats;
+      
+      // Create a summary object for display
+      const experimentSummary = {
+        totalPairs: selectedPairs.length,
+        clustersCount: clusterInfo.total_clusters,
+        clustersCovered: data.cluster_coverage.covered_clusters,
+        avgTrustScore: qualityStats.avg_trust_score,
+        avgCotLength: qualityStats.avg_cot_length,
+        reasoningTypes: qualityStats.reasoning_types,
+        clusteringMethod: clusterInfo.method,
+        silhouetteScore: clusterInfo.silhouette_score
+      };
+      
+      setClusters(experimentSummary); // Store summary in clusters state for display
       setCurrentStep('labeling');
       
     } catch (err) {
       setError(err.message);
-      console.error('Error fetching cluster data:', err);
+      console.error('Error fetching diverse representatives:', err);
     } finally {
       setLoading(false);
     }
@@ -125,7 +104,7 @@ export default function PropagationPage() {
         },
         body: JSON.stringify({
           human_labels: userLabels,
-          num_representatives: 2
+          num_representatives: 30  // Match the actual number of selected representatives
         })
       });
       
@@ -186,21 +165,45 @@ export default function PropagationPage() {
       <main>
         <h1>Q&A Hallucination Detection via CoT Clustering</h1>
         <div className="experiment-description">
-          <p><strong>Goal:</strong> Label Q&A pairs as correct/incorrect based on reasoning pattern clustering.</p>
-          <p>We found <strong>{Object.keys(clusters.reduce((acc, cot) => { acc[`${cot.question}|||${cot.answer}`] = true; return acc; }, {})).length} unique Q&A pairs</strong> from {clusters.length} CoT examples.</p>
-          <p><strong>Experiment Setup:</strong> You'll label only <strong>{representatives.length} Q&A pairs</strong> (minimal supervision).</p>
-          <p>The system will propagate your labels to the remaining <strong>{Object.keys(clusters.reduce((acc, cot) => { acc[`${cot.question}|||${cot.answer}`] = true; return acc; }, {})).length - representatives.length} Q&A pairs</strong> based on shared reasoning patterns.</p>
-          <p><em>This tests whether reasoning similarity can bridge across different question domains.</em></p>
+          <p><strong>Goal:</strong> Label Q&A pairs as correct/incorrect based on semantic diversity across reasoning patterns.</p>
+          <p><strong>Intelligent Selection:</strong> We've selected <strong>{representatives.length} diverse, high-quality Q&A pairs</strong> from 300 total CoT examples using:</p>
+          <ul>
+            <li>✅ <strong>{clusters.clusteringMethod} clustering</strong> with {clusters.clustersCount} clusters (silhouette score: {clusters.silhouetteScore?.toFixed(3)})</li>
+            <li>✅ <strong>Full cluster coverage:</strong> {clusters.clustersCovered}/{clusters.clustersCount} clusters represented</li>
+            <li>✅ <strong>High-trust CoTs:</strong> Average trust score of {clusters.avgTrustScore?.toFixed(3)} (closest to centroids)</li>
+            <li>✅ <strong>Semantic diversity:</strong> {Object.entries(clusters.reasoningTypes || {}).map(([type, count]) => `${count} ${type}`).join(', ')}</li>
+            <li>✅ <strong>Quality filtering:</strong> Well-written, logically sound reasoning (avg length: {clusters.avgCotLength?.toFixed(0)} chars)</li>
+          </ul>
+          <p><strong>Selection Criteria Applied:</strong></p>
+          <ul>
+            <li>🎯 1-2 representative CoTs from each cluster (avoiding edge cases)</li>
+            <li>🔍 Prioritized distinct reasoning patterns and structures</li>
+            <li>🚫 Excluded extremely similar or templated pairs</li>
+            <li>⭐ Focused on core exemplars of each reasoning type</li>
+          </ul>
+          <p><em>This ensures your labels will effectively propagate across the semantic space of reasoning patterns.</em></p>
+        </div>
+
+        <div className="labeling-progress">
+          <p><strong>Progress:</strong> {Object.keys(userLabels).length}/{representatives.length} pairs labeled</p>
+          <div className="progress-bar">
+            <div 
+              className="progress-fill" 
+              style={{width: `${(Object.keys(userLabels).length / representatives.length) * 100}%`}}
+            ></div>
+          </div>
         </div>
 
         <div className="representatives-container">
           {representatives.map((rep, index) => (
             <div key={rep.qa_pair_key} className="representative-card">
               <div className="card-header">
-                <h3>Q&A Pair {index + 1} for Human Labeling</h3>
-                <p className="cluster-description">
-                  Appears in {rep.cluster_coverage} reasoning clusters: {rep.reasoning_clusters.map(id => `Cluster ${id}`).join(', ')}
-                </p>
+                <h3>Q&A Pair {index + 1} <span className="cluster-badge">Cluster {rep.cluster_id}</span></h3>
+                <div className="quality-indicators">
+                  <span className={`trust-badge ${rep.trust_level.toLowerCase()}`}>{rep.trust_level} Trust</span>
+                  <span className="reasoning-badge">{rep.reasoning_type}</span>
+                  <span className="length-badge">{rep.cot_length} chars</span>
+                </div>
               </div>
               
               <div className="qa-content">

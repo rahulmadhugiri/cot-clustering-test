@@ -20,6 +20,12 @@ class PropagationService:
         Propagate human labels to unlabeled Q&A pairs based on reasoning pattern similarity
         """
         logger.info(f"Propagating labels from {len(human_labels)} human-labeled pairs")
+        logger.info(f"Using {len(representatives)} representatives for propagation")
+        logger.info(f"Total Q&A pairs to process: {len(qa_pairs)}")
+        
+        # Debug: Check representative coverage
+        valid_representatives = [rep for rep in representatives if rep in qa_pairs and rep in human_labels]
+        logger.info(f"Valid representatives with both qa_pairs and human_labels: {len(valid_representatives)}")
         
         updated_qa_pairs = {}
         propagation_stats = {
@@ -53,17 +59,20 @@ class PropagationService:
                     updated_pair.shared_reasoning = propagation_result["shared_clusters"]
                     propagation_stats["propagated"] += 1
                     
-                elif self._has_only_outlier_clusters(qa_pair):
-                    updated_pair.predicted_label = "uncertain"
-                    updated_pair.confidence = 0.0
-                    updated_pair.source = "OUTLIER"
-                    propagation_stats["outliers"] += 1
-                    
                 else:
+                    # For K-Means clustering, items aren't true outliers
+                    # They just don't have sufficient overlap with labeled representatives
                     updated_pair.predicted_label = "uncertain"
                     updated_pair.confidence = 0.0
-                    updated_pair.source = "UNPROPAGATED"
-                    propagation_stats["unpropagated"] += 1
+                    
+                    # Check if this has any valid clusters (not -1)
+                    if self._has_only_outlier_clusters(qa_pair):
+                        updated_pair.source = "OUTLIER"
+                        propagation_stats["outliers"] += 1
+                    else:
+                        # Has valid clusters but no good propagation match
+                        updated_pair.source = "UNPROPAGATED"
+                        propagation_stats["unpropagated"] += 1
             
             updated_qa_pairs[qa_key] = updated_pair
         
@@ -89,14 +98,20 @@ class PropagationService:
         """
         target_clusters = set(target_qa.clusters)
         
-        if not target_clusters:  # No valid clusters
-            return {"success": False}
+        if not target_clusters or (len(target_clusters) == 1 and -1 in target_clusters):
+            return {"success": False, "reason": "No valid clusters"}
         
         best_match = None
         best_overlap = 0
+        best_confidence = 0.0
+        
+        matches_found = 0
+        representatives_checked = 0
         
         for rep_qa_key in representatives:
-            if rep_qa_key in human_labels:
+            representatives_checked += 1
+            
+            if rep_qa_key in human_labels and rep_qa_key in all_qa_pairs:
                 rep_qa = all_qa_pairs[rep_qa_key]
                 rep_clusters = set(rep_qa.clusters)
                 
@@ -104,24 +119,53 @@ class PropagationService:
                 intersection = target_clusters.intersection(rep_clusters)
                 overlap_count = len(intersection)
                 
-                if overlap_count > best_overlap:
+                if overlap_count > 0:  # Any overlap is good for propagation
+                    matches_found += 1
+                    
                     # Calculate confidence based on Jaccard similarity
                     union = target_clusters.union(rep_clusters)
                     jaccard_similarity = len(intersection) / len(union) if union else 0.0
                     
-                    best_overlap = overlap_count
-                    best_match = {
-                        "label": human_labels[rep_qa_key],
-                        "confidence": max(0.3, min(0.9, jaccard_similarity)),  # Bounded confidence
-                        "source_qa": rep_qa_key,
-                        "shared_clusters": ", ".join([f"Cluster {c}" for c in sorted(intersection)]),
-                        "overlap_count": overlap_count
-                    }
+                    # More lenient confidence calculation for K-Means results
+                    # Since K-Means doesn't have outliers, we can be more confident in propagation
+                    base_confidence = 0.5 + (jaccard_similarity * 0.4)  # Range: 0.5 to 0.9
+                    
+                    # Boost confidence if there's significant overlap
+                    if overlap_count >= 2:
+                        base_confidence += 0.1
+                    if len(intersection) == len(target_clusters):  # Target is subset of representative
+                        base_confidence += 0.1
+                    
+                    confidence = min(0.95, max(0.3, base_confidence))
+                    
+                    # Sanitize confidence value
+                    if np.isnan(confidence) or np.isinf(confidence):
+                        confidence = 0.5  # Default confidence
+                    
+                    # Update best match if this is better
+                    if overlap_count > best_overlap or (overlap_count == best_overlap and confidence > best_confidence):
+                        best_overlap = overlap_count
+                        best_confidence = confidence
+                        best_match = {
+                            "label": human_labels[rep_qa_key],
+                            "confidence": float(confidence),
+                            "source_qa": rep_qa_key,
+                            "shared_clusters": ", ".join([f"Cluster {c}" for c in sorted(intersection)]),
+                            "overlap_count": overlap_count,
+                            "jaccard_similarity": jaccard_similarity
+                        }
         
-        if best_match and best_match["confidence"] > 0:
+        # Debug logging for failed matches
+        if not best_match:
+            logger.debug(f"No propagation match found: {representatives_checked} representatives checked, "
+                        f"{matches_found} had cluster overlap, target clusters: {sorted(target_clusters)}")
+        
+        # Lower the threshold for propagation success
+        if best_match and best_match["confidence"] >= 0.3:  # Reduced from previous threshold
             return {"success": True, **best_match}
         else:
-            return {"success": False}
+            reason = "No matches found" if not best_match else f"Best confidence {best_match['confidence']:.3f} below threshold"
+            return {"success": False, "reason": reason}
     
     def _has_only_outlier_clusters(self, qa_pair: QAPair) -> bool:
         """Check if Q&A pair has only outlier clusters (-1)"""
