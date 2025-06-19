@@ -113,148 +113,44 @@ export default function PropagationPage() {
     }));
   };
 
-  const propagateLabels = () => {
-    setCurrentStep('propagating');
-    
-    // Group all CoTs by their Q&A pairs
-    const qaPairGroups = {};
-    clusters.forEach(cot => {
-      const qaPairKey = `${cot.question}|||${cot.answer}`;
-      if (!qaPairGroups[qaPairKey]) {
-        qaPairGroups[qaPairKey] = {
-          question: cot.question,
-          answer: cot.answer,
-          cots: []
-        };
-      }
-      qaPairGroups[qaPairKey].cots.push(cot);
-    });
-    
-    // Create a mapping of which clusters each Q&A pair appears in
-    const qaPairClusterMap = {};
-    Object.keys(qaPairGroups).forEach(qaPairKey => {
-      const clusters = qaPairGroups[qaPairKey].cots.map(cot => cot.cluster_id).filter(id => id !== -1);
-      qaPairClusterMap[qaPairKey] = [...new Set(clusters)]; // unique clusters
-    });
-    
-    // Create final results grouped by Q&A pairs
-    const results = Object.keys(qaPairGroups).map(qaPairKey => {
-      const qaPair = qaPairGroups[qaPairKey];
+  const propagateLabels = async () => {
+    try {
+      setCurrentStep('propagating');
       
-      // Find if this Q&A pair was directly labeled by user
-      const directLabel = userLabels[qaPairKey];
-      if (directLabel) {
-        return {
-          qa_pair_key: qaPairKey,
-          question: qaPair.question,
-          answer: qaPair.answer,
-          predicted_label: directLabel,
-          confidence: 1.0,
-          source: 'HUMAN',
-          reasoning_cots: qaPair.cots,
-          cluster_info: qaPairClusterMap[qaPairKey].map(id => `Cluster ${id}`).join(', ')
-        };
-      }
-      
-      // Find the most representative CoT for this Q&A pair to determine primary cluster
-      const nonOutlierCots = qaPair.cots.filter(cot => cot.cluster_id !== -1);
-      if (nonOutlierCots.length === 0) {
-        // This Q&A pair's reasoning is all outliers
-        return {
-          qa_pair_key: qaPairKey,
-          question: qaPair.question,
-          answer: qaPair.answer,
-          predicted_label: 'uncertain',
-          confidence: 0.0,
-          source: 'OUTLIER',
-          reasoning_cots: qaPair.cots,
-          cluster_info: 'Outlier'
-        };
-      }
-      
-      // Find the best cluster match for propagation
-      // Look for labeled Q&A pairs that share reasoning clusters with this unlabeled pair
-      const thisQAPairClusters = qaPairClusterMap[qaPairKey];
-      let bestMatch = null;
-      let bestOverlap = 0;
-      
-      representatives.forEach(rep => {
-        const humanLabel = userLabels[rep.qa_pair_key];
-        if (humanLabel) {
-          const repClusters = qaPairClusterMap[rep.qa_pair_key] || [];
-          const overlap = thisQAPairClusters.filter(cluster => repClusters.includes(cluster)).length;
-          
-          if (overlap > bestOverlap) {
-            bestOverlap = overlap;
-            bestMatch = {
-              label: humanLabel,
-              sourceQA: rep.qa_pair_key,
-              sharedClusters: thisQAPairClusters.filter(cluster => repClusters.includes(cluster)),
-              confidence: overlap / Math.max(thisQAPairClusters.length, repClusters.length)
-            };
-          }
-        }
+      // Call the Python backend for label propagation
+      const response = await fetch('/api/propagate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          human_labels: userLabels,
+          num_representatives: 2
+        })
       });
       
-      if (bestMatch && bestMatch.confidence > 0) {
-        // Propagate based on shared reasoning patterns
-        return {
-          qa_pair_key: qaPairKey,
-          question: qaPair.question,
-          answer: qaPair.answer,
-          predicted_label: bestMatch.label,
-          confidence: Math.max(0.3, Math.min(0.9, bestMatch.confidence)), // Bounded confidence
-          source: 'PROPAGATED',
-          reasoning_cots: qaPair.cots,
-          cluster_info: thisQAPairClusters.map(id => `Cluster ${id}`).join(', '),
-          propagation_source: bestMatch.sourceQA,
-          shared_reasoning: bestMatch.sharedClusters.map(id => `Cluster ${id}`).join(', ')
-        };
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to propagate labels');
       }
       
-      // Fallback: use cluster-based propagation if no direct overlap
-      const representativeCot = nonOutlierCots.reduce((prev, current) => 
-        current.outlier_score < prev.outlier_score ? current : prev
-      );
+      const result = await response.json();
       
-      // Find any human-labeled representative from the same primary cluster
-      const sameClusterRep = representatives.find(rep => {
-        const repClusters = qaPairClusterMap[rep.qa_pair_key] || [];
-        return repClusters.includes(representativeCot.cluster_id);
-      });
-      
-      if (sameClusterRep) {
-        const humanLabel = userLabels[sameClusterRep.qa_pair_key];
-        const confidence = Math.max(0.1, 0.7 - representativeCot.outlier_score);
-        
-        return {
-          qa_pair_key: qaPairKey,
-          question: qaPair.question,
-          answer: qaPair.answer,
-          predicted_label: humanLabel,
-          confidence: confidence,
-          source: 'PROPAGATED',
-          reasoning_cots: qaPair.cots,
-          cluster_info: thisQAPairClusters.map(id => `Cluster ${id}`).join(', '),
-          propagation_source: sameClusterRep.qa_pair_key
-        };
+      if (!result.success) {
+        throw new Error('Label propagation failed');
       }
       
-      // No propagation possible
-      return {
-        qa_pair_key: qaPairKey,
-        question: qaPair.question,
-        answer: qaPair.answer,
-        predicted_label: 'uncertain',
-        confidence: 0.0,
-        source: 'UNPROPAGATED',
-        reasoning_cots: qaPair.cots,
-        cluster_info: thisQAPairClusters.map(id => `Cluster ${id}`).join(', ')
-      };
-    });
-    
-    setPropagatedResults(results);
-    setCurrentStep('results');
+             // Use the results from Python backend
+       const results = result.results;
+       
+       setPropagatedResults(results);
+       setCurrentStep('results');
+       
+    } catch (error) {
+      console.error('Error during label propagation:', error);
+      setError(error.message);
+      setCurrentStep('labeling');
+    }
   };
 
   const allLabelsProvided = () => {

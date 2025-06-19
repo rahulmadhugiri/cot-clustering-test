@@ -1,31 +1,62 @@
 {
-  "name": "cot-clustering-test",
-  "version": "0.1.0",
-  "private": true,
+  "name": "cot-clustering-research",
+  "version": "1.0.0",
+  "description": "CoT reasoning pattern clustering for hallucination detection research",
   "type": "module",
   "scripts": {
     "dev": "next dev",
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev:backend": "cd backend && python3 main.py",
+    "dev:full": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
     "build": "next build",
+    "build:frontend": "cd frontend && npm run build",
     "start": "next start",
+    "start:frontend": "cd frontend && npm run start",
+    "start:backend": "cd backend && python3 main.py",
     "lint": "next lint",
-    "embed": "node -r dotenv/config scripts/embed-and-upload.js dotenv_config_path=.env.local",
-    "embed-mixed": "node -r dotenv/config scripts/embed-mixed-cots.js dotenv_config_path=.env.local",
-    "embed-abstract": "node -r dotenv/config scripts/embed-abstract-cots.js dotenv_config_path=.env.local",
-    "embed-pure-logic": "node -r dotenv/config scripts/embed-pure-logic-cots.js dotenv_config_path=.env.local",
-    "test-connection": "node -r dotenv/config scripts/test-connection.js dotenv_config_path=.env.local"
+    "lint:frontend": "cd frontend && npm run lint",
+    "setup:backend": "cd backend && pip3 install -r requirements.txt",
+    "setup:frontend": "cd frontend && npm install",
+    "setup": "npm run setup:backend && npm run setup:frontend",
+    "test:backend": "cd backend && pytest tests/ -v",
+    "notebook": "cd backend/notebooks && jupyter notebook",
+    "docs:backend": "cd backend && python -m http.server 8001 -d .",
+    "test-connection": "node scripts/test-connection.js",
+    "embed": "node scripts/embed-and-upload.js",
+    "clean": "rm -rf .next frontend/.next backend/__pycache__ backend/**/__pycache__"
   },
   "dependencies": {
     "@pinecone-database/pinecone": "^6.1.1",
     "dotenv": "^16.5.0",
-    "hdbscan": "^0.0.1-alpha.1",
     "next": "15.3.4",
     "openai": "^5.5.1",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react": "19.0.0",
+    "react-dom": "19.0.0"
   },
   "devDependencies": {
-    "@eslint/eslintrc": "^3",
-    "eslint": "^9",
+    "@eslint/eslintrc": "^3.2.0",
+    "concurrently": "^8.2.2",
+    "eslint": "^9.17.0",
     "eslint-config-next": "15.3.4"
+  },
+  "keywords": [
+    "machine-learning",
+    "reasoning",
+    "clustering",
+    "hallucination-detection",
+    "chain-of-thought",
+    "research",
+    "fastapi",
+    "nextjs"
+  ],
+  "author": "Research Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-org/cot-clustering-research"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "python": ">=3.8.0"
   }
 }

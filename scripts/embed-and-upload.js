@@ -1,6 +1,10 @@
 import OpenAI from 'openai';
 import { Pinecone } from '@pinecone-database/pinecone';
 import { cotsData } from '../data/cots.js';
+import dotenv from 'dotenv';
+
+// Load environment variables
+dotenv.config();
 
 // Initialize OpenAI
 const openai = new OpenAI({

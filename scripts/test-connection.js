@@ -1,5 +1,9 @@
 import OpenAI from 'openai';
 import { Pinecone } from '@pinecone-database/pinecone';
+import dotenv from 'dotenv';
+
+// Load environment variables
+dotenv.config();
 
 // Initialize OpenAI
 const openai = new OpenAI({
