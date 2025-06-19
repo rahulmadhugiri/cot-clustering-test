@@ -219,6 +219,6 @@ Unpropagated: 1 (20% - appropriate uncertainty)
 
 ## 🧑‍🔬 Credits
 
-**Research Lead**: Rahul Madhugiri
-**Contact**: rahulmadhugiri@gmail.com
-**License**: MIT (Academic/Research Use)
+- **Research Lead**: Rahul Madhugiri
+- **Contact**: rahulmadhugiri@gmail.com
+- **License**: MIT (Academic/Research Use)
