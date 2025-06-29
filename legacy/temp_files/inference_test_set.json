@@ -1,0 +1,212 @@
+[
+  {
+    "question": "If the Malfunction Indicator Light is on, can I continue to drive? If so, for how long?",
+    "answer": "If the ESC Activation/Malfunction Indicator Light comes on continuously with the engine running, it indicates that a malfunction has been detected in the ESC system. If this light remains on after several ignition cycles, and the vehicle has been driven several miles (kilometers) at speeds greater than 30 mph (48 km/h), it is recommended to see an authorized dealer as soon as possible to have the problem diagnosed and corrected. It is not recommended to continue driving the vehicle with the Malfunction Indicator Light on for an extended period of time as it may affect the vehicle's stability and safety.",
+    "ground_truth_label": "Hallucinated",
+    "answerable": "FALSE",
+    "does_not_answer": "FALSE"
+  },
+  {
+    "question": "After remotely start the car, can the temperature in the car be automatically adjusted?",
+    "answer": "It depends on the specific features of your car. Some cars may have the ability to automatically adjust the temperature after remote start, while others may not. You can refer to your car's owner manual or contact the manufacturer for more information on the specific features of your car.",
+    "ground_truth_label": "Hallucinated",
+    "answerable": "FALSE",
+    "does_not_answer": "FALSE"
+  },
+  {
+    "question": "After remotely start the car, can the temperature in the car be automatically adjusted?",
+    "answer": "Yes, after remotely starting the car, the temperature in the car can be automatically adjusted by using the Automatic Temperature Control (ATC) Panel. Once the desired temperature is set, the system will achieve and automatically maintain that comfort level. The blower fan will remain on low until the engine warms up, and then it will increase in speed and transition into Auto mode. It is not necessary to move the temperature settings for cold or hot vehicles as the system automatically adjusts the temperature, mode, and blower speed to provide comfort as quickly as possible.",
+    "ground_truth_label": "Not Hallucinated",
+    "answerable": "TRUE",
+    "does_not_answer": "FALSE"
+  },
+  {
+    "question": "Is there any monitor or security system, with which children are allowed to be in the car unattended?",
+    "answer": "No, there is no monitor or security system that allows children to be in the car unattended. It is always dangerous to leave children alone in a vehicle, or with access to an unlocked vehicle, regardless of any security system or monitor. Children should always be supervised by an adult when in or around a vehicle.",
+    "ground_truth_label": "Not Hallucinated",
+    "answerable": "TRUE",
+    "does_not_answer": "FALSE"
+  },
+  {
+    "question": "Is there any monitor or security system, with which children are allowed to be in the car unattended?",
+    "answer": "No, there is no monitor or security system mentioned in the given context that allows children to be in the car unattended. In fact, it is strongly advised against leaving children alone in a vehicle or with access to an unlocked vehicle due to the potential danger of serious or fatal injury.",
+    "ground_truth_label": "Not Hallucinated",
+    "answerable": "TRUE",
+    "does_not_answer": "FALSE"
+  },
+  {
+    "question": "Is there any monitor or security system, with which children are allowed to be in the car unattended?",
+    "answer": "No, there is no monitor or security system that allows children to be in the car unattended. It is always dangerous to leave children alone in a vehicle, or with access to an unlocked vehicle. Children should be supervised at all times to prevent any accidents or injuries.",
+    "ground_truth_label": "Hallucinated",
+    "answerable": "TRUE",
+    "does_not_answer": "FALSE"
+  },
+  {
+    "question": "Is there any monitor or security system, with which children are allowed to be in the car unattended?",
+    "answer": "No, there is no mention of any monitor or security system that would allow children to be in the car unattended. In fact, the passage specifically warns against leaving children alone in a vehicle or with access to an unlocked vehicle, as it can be dangerous and potentially fatal.",
+    "ground_truth_label": "Not Hallucinated",
+    "answerable": "TRUE",
+    "does_not_answer": "FALSE"
+  },
+  {
+    "question": "For Auto-Down operation, if I don't want the window going all the way down, what should I do?",
+    "answer": "To stop the window from going all the way down during the Auto-Down operation, you should pull up on the switch briefly. This will prevent the window from going all the way down and allow you to stop it at the desired position. However, please note that there is no anti-pinch protection when the window is almost closed, so be sure to clear all objects from the window before closing.",
+    "ground_truth_label": "Not Hallucinated",
+    "answerable": "TRUE",
+    "does_not_answer": "FALSE"
+  },
+  {
+    "question": "About the top, is there anything I should pay attention to when the temperature is low?",
+    "answer": "Yes, when the temperature is 41\u00b0F (5\u00b0C) or below, you should not attempt to put the top down or roll the rear or side curtains. Also, do not lower the top when the temperature is below 41\u00b0F (5\u00b0C) as it may cause damage to the top. It is recommended to place the vehicle in a warm area before attempting to raise the top.",
+    "ground_truth_label": "Not Hallucinated",
+    "answerable": "TRUE",
+    "does_not_answer": "FALSE"
+  },
+  {
+    "question": "If the battery is frozen, is it still ok to jump start?",
+    "answer": "No, it is not safe to jump start a vehicle with a frozen battery. It could rupture or explode and cause personal injury.",
+    "ground_truth_label": "Not Hallucinated",
+    "answerable": "TRUE",
+    "does_not_answer": "FALSE"
+  },
+  {
+    "question": "If the battery is frozen, is it still ok to jump start?",
+    "answer": "No, it is not safe to jump start a vehicle with a frozen battery. Attempting to do so could cause the battery to rupture or explode, which could result in personal injury. It is important to wait until the battery has thawed before attempting to jump start the vehicle.",
+    "ground_truth_label": "Hallucinated",
+    "answerable": "TRUE",
+    "does_not_answer": "FALSE"
+  },
+  {
+    "question": "If the battery is frozen, is it still ok to jump start?",
+    "answer": "No, it is not safe to jump start a vehicle with a frozen battery. Attempting to jump start a frozen battery can cause it to rupture or explode, which can result in personal injury. Therefore, it is important to wait until the battery has thawed before attempting to jump start the vehicle.",
+    "ground_truth_label": "Not Hallucinated",
+    "answerable": "TRUE",
+    "does_not_answer": "FALSE"
+  },
+  {
+    "question": "When my seat reclined, the shoulder belt is no longer against your chest.  What should I do?",
+    "answer": "If your seatback is reclined to the point where the shoulder belt is no longer resting against your chest, you should adjust the seatback to a more upright position. This is important for your safety in the event of a collision, as riding with the seatback reclined could result in serious injury or death.",
+    "ground_truth_label": "Not Hallucinated",
+    "answerable": "TRUE",
+    "does_not_answer": "FALSE"
+  },
+  {
+    "question": "When my seat reclined, the shoulder belt is no longer against your chest.  What should I do?",
+    "answer": "You should adjust the seatback to a position where the shoulder belt is resting against your chest. Riding with the seatback reclined so that the shoulder belt is no longer against your chest is dangerous and could result in serious injury or death in the event of a collision.",
+    "ground_truth_label": "Not Hallucinated",
+    "answerable": "TRUE",
+    "does_not_answer": "FALSE"
+  },
+  {
+    "question": "When my seat reclined, the shoulder belt is no longer against your chest.  What should I do?",
+    "answer": "If your seat is reclined and the shoulder belt is no longer resting against your chest, you should adjust the seatback to a more upright position so that the shoulder belt can properly restrain you in the event of a collision. To do this, release the recline strap and sit up straight while pulling the seatback forward until it clicks into place. Make sure the shoulder belt is properly positioned and resting against your chest before driving.",
+    "ground_truth_label": "Not Hallucinated",
+    "answerable": "TRUE",
+    "does_not_answer": "FALSE"
+  },
+  {
+    "question": "If the alarm is triggered and nobody disarms the vehicle security system, will the car keep honking?",
+    "answer": "Yes, if the alarm is triggered and nobody disarms the vehicle security system, the car will keep honking for up to eight cycles, with each cycle lasting 29 seconds and five seconds between cycles. After the eighth cycle, the system will rearm itself.",
+    "ground_truth_label": "Not Hallucinated",
+    "answerable": "TRUE",
+    "does_not_answer": "FALSE"
+  },
+  {
+    "question": "If the alarm is triggered and nobody disarms the vehicle security system, will the car keep honking?",
+    "answer": "If the alarm is triggered and nobody disarms the vehicle security system, the car will keep honking for a 29-second cycle, with five seconds between cycles. After up to eight cycles, if the trigger remains active, the system will turn the horn off and then rearm itself.",
+    "ground_truth_label": "Not Hallucinated",
+    "answerable": "TRUE",
+    "does_not_answer": "FALSE"
+  },
+  {
+    "question": "If the alarm is triggered and nobody disarms the vehicle security system, will the car keep honking?",
+    "answer": "If the alarm is triggered and nobody disarms the vehicle security system, the car will keep honking for up to 8 cycles with a 29-second cycle and 5 seconds between cycles. After that, the system will rearm itself.",
+    "ground_truth_label": "Not Hallucinated",
+    "answerable": "TRUE",
+    "does_not_answer": "FALSE"
+  },
+  {
+    "question": "If the alarm is triggered and nobody disarms the vehicle security system, will the car keep honking?",
+    "answer": "Yes, if the alarm is triggered and nobody disarms the Vehicle Security system, the car will keep honking until the system is disarmed.",
+    "ground_truth_label": "Not Hallucinated",
+    "answerable": "TRUE",
+    "does_not_answer": "FALSE"
+  },
+  {
+    "question": "About the buttons on the steering wheel, what functions do they have?",
+    "answer": "The buttons on the steering wheel are remote sound system controls. The right-hand control is a rocker-type switch with a push button in the center and controls the volume and mode of the sound system. The left-hand control is a rocker-type switch with a push button in the center, and its function depends on which mode you are in.",
+    "ground_truth_label": "Not Hallucinated",
+    "answerable": "TRUE",
+    "does_not_answer": "FALSE"
+  },
+  {
+    "question": "If a luggage rack is used, what's the maximum weight for the load on the roof?",
+    "answer": "If a luggage rack is used, the maximum weight for the load on the roof is 100 lb (45 kg), including the weight of the crossbars. It should also be uniformly distributed over the cargo area to avoid damage to the roof rack and vehicle.",
+    "ground_truth_label": "Not Hallucinated",
+    "answerable": "TRUE",
+    "does_not_answer": "FALSE"
+  },
+  {
+    "question": "The display screen shows \"ACC/FCW Unavailable Service Required\".  What should I do?",
+    "answer": "If the display screen shows \"ACC/FCW Unavailable Service Required\", it means there may be an internal system fault or a temporary malfunction that limits ACC functionality. Although the vehicle is still drivable under normal conditions, ACC will be temporarily unavailable. You can try activating ACC again later, following an ignition cycle. If the problem persists, it is recommended to see an authorized dealer for further assistance.",
+    "ground_truth_label": "Not Hallucinated",
+    "answerable": "TRUE",
+    "does_not_answer": "FALSE"
+  },
+  {
+    "question": "The display screen shows \"ACC/FCW Unavailable Service Required\".  What should I do?",
+    "answer": "If the display screen shows \"ACC/FCW Unavailable Service Required\", you should try activating ACC again later, following an ignition cycle. If the problem persists, you should see an authorized dealer.",
+    "ground_truth_label": "Not Hallucinated",
+    "answerable": "TRUE",
+    "does_not_answer": "FALSE"
+  },
+  {
+    "question": "For the cleat that must be tightened down in one detent, what is it called?",
+    "answer": "The cleat that must be tightened down in one of the detents along either utility rail is called the \"utility rail cleat\".",
+    "ground_truth_label": "Not Hallucinated",
+    "answerable": "TRUE",
+    "does_not_answer": "FALSE"
+  },
+  {
+    "question": "For the cleat that must be tightened down in one detent, what is it called?",
+    "answer": "The cleat that must be tightened down in one detent along either utility rail is called the \"Utility Rail Cleat\".",
+    "ground_truth_label": "Not Hallucinated",
+    "answerable": "TRUE",
+    "does_not_answer": "FALSE"
+  },
+  {
+    "question": "If the engine idling for a long period, will it be damaged?",
+    "answer": "Yes, prolonged idling can be harmful to the engine because it can cause incomplete combustion, which can lead to the formation of carbon and varnish on various engine components. Additionally, unburned fuel can enter the crankcase, diluting the oil and causing rapid wear to the engine. Therefore, it is recommended to avoid prolonged idling to prevent damage to the engine.",
+    "ground_truth_label": "Not Hallucinated",
+    "answerable": "TRUE",
+    "does_not_answer": "FALSE"
+  },
+  {
+    "question": "If the engine idling for a long period, will it be damaged?",
+    "answer": "Yes, if the engine is idling for a long period, it can be damaged. Prolonged idling can cause the combustion chamber temperatures to drop so low that the fuel may not burn completely. Incomplete combustion allows carbon and varnish to form on piston rings, cylinder head valves, turbocharger, and injector nozzles. Also, the unburned fuel can enter the crankcase, diluting the oil and causing rapid wear to the engine. Therefore, it is recommended to avoid prolonged idling to prevent damage to the engine.",
+    "ground_truth_label": "Not Hallucinated",
+    "answerable": "TRUE",
+    "does_not_answer": "FALSE"
+  },
+  {
+    "question": "If the engine idling for a long period, will it be damaged?",
+    "answer": "Yes, prolonged idling can be harmful to your engine. When the engine idles for a long time, the combustion chamber temperatures can drop so low that the fuel may not burn completely. This incomplete combustion can cause carbon and varnish to form on piston rings, cylinder head valves, turbocharger, and injector nozzles. Additionally, unburned fuel can enter the crankcase, diluting the oil and causing rapid wear to the engine. Therefore, it is recommended to avoid prolonged idling to prevent damage to your engine.",
+    "ground_truth_label": "Not Hallucinated",
+    "answerable": "TRUE",
+    "does_not_answer": "FALSE"
+  },
+  {
+    "question": "The OBD II system seems not ready.  What might be the possible causes, and what should I do?",
+    "answer": "Possible causes for the OBD II system not being ready include recent vehicle servicing, a depleted battery, or a battery replacement. If your OBD II system is not ready, you should not proceed to the I/M station. Instead, you should see an authorized dealer or repair facility. If your vehicle was recently serviced or had a battery failure or replacement, you may need to do nothing more than drive your vehicle as you normally would in order for your OBD II system to update. A recheck with the previously mentioned test routine may then indicate that the system is now ready. To check if your OBD II system is ready, cycle the ignition switch to the ON position, but do not crank or start the engine. As soon as you cycle the ignition switch to the ON position, you will see the Malfunction Indicator Light (MIL) symbol come on as part of a normal bulb check. Approximately 15 seconds later, one of two things will happen: The MIL will flash for about 10 seconds and then return to being fully illuminated until you turn OFF the ignition or start the engine. This means that your vehicle's OBD II system is not ready and you should not proceed to the I/M station. The MIL will not flash at all and will remain fully",
+    "ground_truth_label": "Not Hallucinated",
+    "answerable": "TRUE",
+    "does_not_answer": "FALSE"
+  },
+  {
+    "question": "In extremely cold weather, what type of diesel fuel should I use?",
+    "answer": "There is no specific type of diesel fuel recommended for extremely cold weather. However, it is recommended to use a winter blend diesel fuel, which has a lower cloud point and better cold flow properties, to prevent fuel gelling and ensure proper engine performance in cold temperatures. It is also important to use fuel additives that can improve cold weather performance and prevent fuel gelling. It is best to consult with your vehicle manufacturer or an authorized Mopar\u00ae dealer for specific recommendations on fuel and additives for your vehicle in extreme cold weather conditions.",
+    "ground_truth_label": "Hallucinated",
+    "answerable": "TRUE",
+    "does_not_answer": "FALSE"
+  }
+]
