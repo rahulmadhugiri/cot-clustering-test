@@ -133,7 +133,7 @@ Provide flawed step-by-step reasoning (2-3 sentences) that contains errors or ha
         
         # Load trained weights
         try:
-            model.load_state_dict(torch.load('backend/best_advanced_binary_choice_model.pth'))
+            model.load_state_dict(torch.load('backend/best_binary_choice_model.pth'))
             model.eval()
             print("✅ Loaded trained Binary Choice Classifier")
             return model

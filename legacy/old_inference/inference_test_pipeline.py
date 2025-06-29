@@ -19,7 +19,7 @@ from datetime import datetime
 # Add backend to path
 sys.path.append('./backend')
 
-from advanced_binary_choice_classifier import AdvancedBinaryChoiceClassifier, AdvancedBinaryChoiceDataLoader
+from original_binary_choice_classifier import BinaryChoiceClassifier
 
 class InferenceTestPipeline:
     def __init__(self):
@@ -251,21 +251,25 @@ Provide flawed step-by-step reasoning (2-3 sentences) that contains errors or ha
         
         print(f"Uploaded {len(vectors)} vectors to Pinecone namespace: {namespace}")
     
-    def load_trained_model(self) -> AdvancedBinaryChoiceClassifier:
-        """Load the trained Advanced Binary Choice Classifier"""
+    def load_trained_model(self) -> BinaryChoiceClassifier:
+        """Load the trained Binary Choice Classifier"""
         # Load cached embeddings to get embedding dimension
-        data_loader = AdvancedBinaryChoiceDataLoader()
-        pos_embeddings, neg_embeddings, labels = data_loader.load_dual_embeddings_cache()
-        embedding_dim = pos_embeddings.shape[1]
+        try:
+            dual_cache = np.load('backend/dual_embeddings_cache.npz')
+            pos_embeddings = dual_cache['pos_embeddings']
+            embedding_dim = pos_embeddings.shape[1]
+        except FileNotFoundError:
+            # Default embedding dimension for text-embedding-3-small
+            embedding_dim = 1024
         
         # Initialize model
-        model = AdvancedBinaryChoiceClassifier(embedding_dim=embedding_dim)
+        model = BinaryChoiceClassifier(embedding_dim=embedding_dim)
         
         # Load trained weights
         try:
-            model.load_state_dict(torch.load('backend/best_advanced_binary_choice_model.pth'))
+            model.load_state_dict(torch.load('backend/best_binary_choice_model.pth'))
             model.eval()
-            print("✅ Loaded trained Advanced Binary Choice Classifier")
+            print("✅ Loaded trained Binary Choice Classifier")
             return model
         except FileNotFoundError:
             raise FileNotFoundError("Trained model not found. Please train the model first.")

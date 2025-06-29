@@ -35,7 +35,7 @@ def load_trained_model() -> BinaryChoiceClassifier:
     
     # Load trained weights
     try:
-        model.load_state_dict(torch.load('backend/best_advanced_binary_choice_model.pth'))
+        model.load_state_dict(torch.load('backend/best_binary_choice_model.pth'))
         model.eval()
         print("✅ Loaded trained Binary Choice Classifier")
         return model

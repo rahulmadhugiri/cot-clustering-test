@@ -1,8 +1,0 @@
-# OpenAI API Key
-OPENAI_API_KEY=your_openai_api_key_here
-
-# Pinecone API Key
-PINECONE_API_KEY=your_pinecone_api_key_here
-
-# Pinecone Index Name - IMPORTANT: Set this to your specific index name
-PINECONE_INDEX_NAME=cot-clustering-test 
