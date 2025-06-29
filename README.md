@@ -65,8 +65,9 @@ cot-clustering-test/
 │
 ├── 🤖 **ML MODELS** (Production Ready)
 │   └── ml-models/
-│       ├── advanced_binary_choice_classifier.py      # Main classifier
-│       ├── advanced_binary_choice_classifier_inference.py  # Inference script
+│       ├── binary_choice_classifier.py               # Main classifier (83.3% accuracy)
+│       ├── evaluate_binary_choice_proper.py          # Model evaluation script
+│       ├── run_inference_from_pinecone.py            # Full inference pipeline
 │       ├── best_binary_choice_model.pth              # Trained model weights
 │       └── requirements.txt                          # ML dependencies
 │
